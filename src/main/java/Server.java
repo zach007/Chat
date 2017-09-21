@@ -7,7 +7,7 @@ import java.net.Socket;
 /**
  * Created by zach on 2017/7/7.
  */
-public class Server implements Runnable{
+public class Server implements Runnable {
     //1 new SeverSocket(port) that the clinet will find you
     //2 listening the client and revice data throuht Socket (a kind of IO)
     private Socket socket = null;
@@ -21,7 +21,7 @@ public class Server implements Runnable{
         try {
             server = new ServerSocket(port);
             start();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -76,7 +76,7 @@ public class Server implements Runnable{
     }
 
     public static void main(String args[]) {
-        Server server = new Server(9999);
+        new Server(9999);
     }
 
 

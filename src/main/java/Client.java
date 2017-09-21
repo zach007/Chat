@@ -22,7 +22,6 @@ public class Client {
         String line = "";
         while (!line.equals(".bye")) {
             try {
-                //line = console.readLine();
                 line = console.readLine();
                 streamOut.writeUTF(line);
                 streamOut.flush();
@@ -48,6 +47,9 @@ public class Client {
     }
 
     public static void main(String args[]) {
-        new Client("127.0.0.1", 9999);
+        if(args.length != 2)
+            System.out.println("Usage: java ChatClient host port");
+        else
+            new Client(args[0], Integer.parseInt(args[1]));
     }
 }
