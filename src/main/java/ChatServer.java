@@ -8,8 +8,8 @@ public class ChatServer implements Runnable {
 
   private Socket socket = null;
   private ServerSocket server = null;
-  private DataInputStream streamIn = null;
   private Thread thread = null;
+  private DataInputStream streamIn = null;
 
 
   /**
