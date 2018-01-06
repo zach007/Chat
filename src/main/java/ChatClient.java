@@ -21,7 +21,8 @@ public class ChatClient {
     String line = "";
     while (!line.equals(".bye")) {
       try {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in, "utf-8"));
+        InputStreamReader in = new InputStreamReader(System.in, "utf-8");
+        BufferedReader bufferedReader = new BufferedReader(in);
         String readLine = bufferedReader.readLine();
         if (readLine != null) {
           line = readLine;
