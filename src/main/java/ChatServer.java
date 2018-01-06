@@ -1,16 +1,12 @@
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ChatServer implements Runnable {
 
-  private Socket socket = null;
   private ServerSocket server = null;
   private Thread thread = null;
-  private DataInputStream streamIn = null;
-
+  private ChatServerThread client = null;
 
   /**
    * 监听客户端.
@@ -22,7 +18,7 @@ public class ChatServer implements Runnable {
       System.out.println("Binding to port " + port + ", please wait  ...");
       server = new ServerSocket(port);
       System.out.println("Server started: " + server);
-      start();
+      keepServerAlive();//保持server永驻
     } catch (IOException ioe) {
       System.out.println(ioe);
     }
@@ -32,27 +28,26 @@ public class ChatServer implements Runnable {
     while (thread != null) {
       try {
         System.out.println("Waiting for a client ...");
-        socket = server.accept();
-        System.out.println("Client accepted: " + socket);
-        open();
-        boolean done = false;
-        while (!done) {
-          try {
-            String line = streamIn.readUTF();
-            System.out.println(line);
-            done = line.equals(".bye");
-          } catch (IOException ioe) {
-            done = true;
-          }
-        }
-        close();
+        Socket socket = server.accept();
+        addThread(socket);
       } catch (IOException ie) {
         System.out.println("Acceptance Error: " + ie);
       }
     }
   }
 
-  public void start() {
+  private void addThread(Socket socket) {
+    System.out.println("Client accepted: " + socket);
+    client = new ChatServerThread(socket);
+    try {
+      client.open();
+      client.start();
+    } catch (IOException ioe) {
+      System.out.println("Error opening thread: " + ioe);
+    }
+  }
+
+  public void keepServerAlive() {
     if (thread == null) {
       thread = new Thread(this);
       thread.start();
@@ -67,16 +62,4 @@ public class ChatServer implements Runnable {
     }
   }
 
-  public void open() throws IOException {
-    streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-  }
-
-  public void close() throws IOException {
-    if (socket != null) {
-      socket.close();
-    }
-    if (streamIn != null) {
-      streamIn.close();
-    }
-  }
 }
