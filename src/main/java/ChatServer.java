@@ -39,7 +39,7 @@ public class ChatServer implements Runnable {
       try {
         System.out.println("Waiting for a client ...");
         Socket socket = server.accept();
-        addThread(socket);
+        addConnection(socket);
       } catch (IOException ie) {
         System.out.println("Acceptance Error: " + ie);
         stop();
@@ -50,7 +50,7 @@ public class ChatServer implements Runnable {
   /**
    * @param socket 每一个建立的socket连接都创建一个新线程，并且确保客户端最大连接数.
    */
-  private void addThread(Socket socket) {
+  private void addConnection(Socket socket) {
     if (clientCount < clients.length) {
       System.out.println("Client accepted: " + socket);
       clients[clientCount] = new ChatServerThread(this, socket);
@@ -66,30 +66,28 @@ public class ChatServer implements Runnable {
     }
   }
 
-  private int findClient(int id) {
+  private int findClient(int port) {
     for (int i = 0; i < clientCount; i++) {
-      if (clients[i].getThreadId() == id) {
-        System.out.println(clients[i].getThreadId() + "<><><><><>" + id);
+      if (clients[i].getPort() == port) {
         return i;
       }
     }
-    System.out.println("找不到");
     return -1;
   }
 
   /**
    * 将获取当前线程id,并且将线程所输入的信息，发送给其他线程.
    *
-   * @param id    线程id
+   * @param port    线程id
    * @param input 线程输入信息
    */
-  public synchronized void handle(int id, String input) {
+  public synchronized void handle(int port, String input) {
     if (input.equals(".bye")) {
-      clients[findClient(id)].send(".bye");
-      remove(id);
+      clients[findClient(port)].send(".bye");
+      remove(port);
     } else {
       for (int i = 0; i < clientCount; i++) {
-        clients[i].send(id + ": " + input);
+        clients[i].send(port + ": " + input);
       }
     }
   }
@@ -104,13 +102,13 @@ public class ChatServer implements Runnable {
   /**
    * 找到当前线程数组所在位置，删除线程.
    *
-   * @param id 当前线程id
+   * @param port 当前线程id
    */
-  public synchronized void remove(int id) {
-    int pos = findClient(id);
+  public synchronized void remove(int port) {
+    int pos = findClient(port);
     if (pos >= 0) {
       ChatServerThread toTerminate = clients[pos];
-      System.out.println("Removing client thread " + id + " at " + pos);
+      System.out.println("Removing client thread " + port + " at " + pos);
       if (pos < clientCount - 1) {
         for (int i = pos + 1; i < clientCount; i++) {
           clients[i - 1] = clients[i];

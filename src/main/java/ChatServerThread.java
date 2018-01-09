@@ -4,7 +4,7 @@ import java.net.Socket;
 public class ChatServerThread extends Thread {
   private ChatServer server = null;
   private Socket socket = null;
-  private int threadId = 0;
+  private int port = 0;
   private DataInputStream streamIn = null;
   private DataOutputStream streamOut = null;
 
@@ -12,11 +12,11 @@ public class ChatServerThread extends Thread {
     super();
     this.server = chatServer;
     this.socket = currentSocket;
-    threadId = socket.getPort();
+    port = socket.getPort();
   }
 
-  public int getThreadId() {
-    return threadId;
+  public int getPort() {
+    return port;
   }
 
   public void send(String msg) {
@@ -24,20 +24,20 @@ public class ChatServerThread extends Thread {
       streamOut.writeUTF(msg);
       streamOut.flush();
     } catch (IOException ioe) {
-      System.out.println(threadId + " ERROR sending: " + ioe.getMessage());
-      server.remove(threadId);
+      System.out.println(port + " ERROR sending: " + ioe.getMessage());
+      server.remove(port);
       interrupt();
     }
   }
 
   public void run() {
-    System.out.println("Server Thread " + threadId + " running.");
+    System.out.println("Server Thread " + port + " running.");
     while (true) {
       try {
-        server.handle(threadId, streamIn.readUTF());
+        server.handle(port, streamIn.readUTF());
       } catch (IOException ioe) {
-        System.out.println(threadId + " ERROR reading: " + ioe.getMessage());
-        server.remove(threadId);
+        System.out.println(port + " ERROR reading: " + ioe.getMessage());
+        server.remove(port);
         interrupt();
       }
     }
