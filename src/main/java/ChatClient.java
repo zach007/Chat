@@ -83,7 +83,7 @@ public class ChatClient implements Runnable {
   }
 
   /**
-   * @param msg  testing jenkins testing1
+   * @param msg  testing jenkins YES
    */
   public void handle(String msg) {
     if (msg.equals(".bye")) {
