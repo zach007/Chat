@@ -82,6 +82,9 @@ public class ChatClient implements Runnable {
     }
   }
 
+  /**
+   * @param msg  testing
+   */
   public void handle(String msg) {
     if (msg.equals(".bye")) {
       System.out.println("Good bye. Press RETURN to exit ...");
