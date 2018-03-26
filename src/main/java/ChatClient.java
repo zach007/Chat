@@ -83,7 +83,7 @@ public class ChatClient implements Runnable {
   }
 
   /**
-   * @param msg  testing1
+   * @param msg  testing
    */
   public void handle(String msg) {
     if (msg.equals(".bye")) {
