@@ -14,11 +14,4 @@ node {
          bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
       }
    }
-   stage('Results') {
-      archive "target/**/*"
-      junit 'target/surefire-reports/*.xml'
-   }
-   stage('Deploy') {
-
-      }
 }
