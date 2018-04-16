@@ -15,7 +15,15 @@ node {
       }
    }
    stage('Results') {
-      junit '**/target/surefire-reports/TEST-*.xml'
-      archive 'target/*.jar'
+      if (isUnix()) {
+         echo 'maven testing in Linux'
+         sh "'${mvnHome}/bin/mvn' -test"
+      } else {
+         echo 'maven testing in Windows'
+         bat(/"${mvnHome}\bin\mvn"  -test/)
+      }
    }
+   stage('Deploy') {
+
+      }
 }
