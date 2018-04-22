@@ -5,14 +5,12 @@ node {
       echo 'check out from git@github.com:zach007/Chat.git'
       mvnHome = tool 'maven_3.5'
    }
-   stage('') {
-         if (isUnix()) {
-            echo 'SonarQUbe anlysis in Linux'
-            sh "'${mvnHome}/bin/mvn' -Dsonar.host.url=http://192.168.0.103:9000"
-         } else {
-            echo 'SonarQUbe anlysis in Windows'
-            bat(/"${mvnHome}\bin\mvn" -Dsonar.host.url=http://192.168.0.103:9000)
-         }
+   stage('SonarQube analysis') {
+    // requires SonarQube Scanner 2.8+
+    def scannerHome = tool 'SonarQube Scanner 2.8';
+    withSonarQubeEnv('192.168.0.103：9000') {
+      sh "${scannerHome}/bin/sonar-scanner"
+    }
    }
    stage('building') {
       if (isUnix()) {
