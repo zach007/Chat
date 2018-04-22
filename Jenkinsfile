@@ -6,13 +6,12 @@ node {
       mvnHome = tool 'maven_3.5'
    }
 
-   stage('SonarQube analysis') {
-       // requires SonarQube Scanner 2.8+
-       def scannerHome = tool 'SonarQube Scanner 2.8';
-       withSonarQubeEnv('My SonarQube Server') {
-         sh "${scannerHome}/bin/sonar-scanner"
-       }
-   }
+  stage('SonarQube analysis') {
+    withSonarQubeEnv('My SonarQube Server') {
+      // requires SonarQube Scanner for Maven 3.2+
+      sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
+    }
+  }
 
    stage('building') {
       if (isUnix()) {
