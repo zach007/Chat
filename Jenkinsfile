@@ -8,10 +8,7 @@ node {
 
   stage('SonarQube analysis') {
     withSonarQubeEnv('docker_sonar') {
-      // requires SonarQube Scanner for Maven 3.2+
-      sh 'mvn clean verify sonar:sonar'
-      sh 'mvn clean install'
-      sh 'mvn sonar:sonar'
+       sh 'mvn clean verify sonar:sonar'
     }
   }
 
