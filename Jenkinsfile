@@ -12,30 +12,26 @@ node {
     }
   }
    stage('testing'){
-        echo 'todo : tesing code with maven and generator report'
+        echo 'running Junit testing'
+        sh 'mvn clean surefire:test'
    }
 
    stage('building') {
-      if (isUnix()) {
-         echo 'maven building in Linux'
-         sh "'${mvnHome}/bin/mvn' -Dmaven.test.failure.ignore clean package"
-      } else {
-         echo 'maven building in Windows'
-         bat(/"${mvnHome}\bin\mvn" -Dmaven.test.failure.ignore clean package/)
-      }
+     echo 'build project'
+     sh 'mvn clean verify sonar:sonar'
    }
 
-    stage('package') {/
-    
-
+    stage('package') {
         echo 'package with maven'
+        sh 'mvn clean package'
     }
 
    stage('deploy to nexus') {
         echo 'deploy to nexus with maven'
+        sh 'mvn clean deploy'
    }
 
-   stage('SAT') {
+   stage('pull code to SAT[docker]') {
         echo '集成测试'
    }
 
@@ -44,6 +40,6 @@ node {
    }
 
    stage('PROD') {
-        echo  'release to Production '
+        echo  'release to Production with param'
    }
 }
