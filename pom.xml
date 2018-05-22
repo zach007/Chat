@@ -51,9 +51,11 @@
             <url>http://192.168.0.103:8081/repository/maven-central/</url>
             <snapshots>
                 <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
             </releases>
         </repository>
     </repositories>
