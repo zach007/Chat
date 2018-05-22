@@ -59,15 +59,22 @@
     </repositories>
 
     <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>releases</name>
-            <url>http://192.168.0.103:8081/nexus/content/repositories/releases/</url>
-        </repository>
         <snapshotRepository>
             <id>snapshots</id>
             <name>snapshots</name>
-            <url>http://192.168.0.103:8081/nexus/content/repositories/snapshots/</url>
+            <url>http://192.168.0.103:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
+        <repository>
+            <id>releases</id>
+            <name>releases</name>
+            <url>http://192.168.0.103:8081/repository/maven-releases/</url>
+        </repository>
+        <site>
+            <id>nexus</id>
+            <name>Nexus Sites</name>
+            <url>dav:http://192.168.0.103:8081/repository/maven-snapshots/</url>
+        </site>
+
+
     </distributionManagement>
 </project>
