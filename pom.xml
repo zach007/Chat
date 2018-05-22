@@ -59,31 +59,15 @@
     </repositories>
 
     <distributionManagement>
-        <!--snapshot-->
+        <repository>
+            <id>releases</id>
+            <name>releases</name>
+            <url>http://192.168.0.103:8081/nexus/content/repositories/releases/</url>
+        </repository>
         <snapshotRepository>
-            <id>nexus</id>
-            <name>Nexus Snapshot</name>
-            <url>http://192.168.0.103:8081/repository/maven-snapshots/</url>
+            <id>snapshots</id>
+            <name>snapshots</name>
+            <url>http://192.168.0.103:8081/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
-        <site>
-            <id>nexus</id>
-            <name>Nexus Sites</name>
-            <url>dav:http://192.168.0.103:8081/repository/maven-snapshots/</url>
-        </site>
-
-        <!--
-            release : remember to rename the version only contain number of maven project setting
-            <version>1.0-SNAPSHOT</version>
-        -->
-
-        <!--
-                <repository>
-                    <id>nexus</id>
-                    <name>Nexus Release</name>
-                    <url>http://192.168.0.103:8081/repository/maven-releases/</url>
-                </repository>
-        -->
-
-
     </distributionManagement>
 </project>
