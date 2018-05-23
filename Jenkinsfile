@@ -18,7 +18,7 @@ node {
 
    stage('building') {
      echo 'build project'
-     sh 'mvn clean verify sonar:sonar'
+     sh 'mvn clean verify sonar:sonar -o'
    }
 
     stage('package') {
