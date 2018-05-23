@@ -8,7 +8,7 @@ node {
 
   stage('SonarQube analysis') {
     withSonarQubeEnv('docker_sonar') {
-       sh 'mvn clean verify sonar:sonar'
+       sh 'mvn clean verify sonar:sonar -o'
     }
   }
    stage('testing'){
