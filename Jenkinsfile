@@ -5,21 +5,21 @@ node {
       echo 'check out from git@github.com:zach007/Chat.git'
       mvnHome = tool 'maven_3.5'
    }
+   stage('building') {
+     echo 'build project'
+     sh 'mvn clean install '
+   }
+
+   stage('testing'){
+        echo 'running Junit testing'
+        sh 'mvn clean surefire:test'
+   }
 
   stage('SonarQube analysis') {
     withSonarQubeEnv('docker_sonar') {
        sh 'mvn clean verify sonar:sonar -o'
     }
   }
-   stage('testing'){
-        echo 'running Junit testing'
-        sh 'mvn clean surefire:test'
-   }
-
-   stage('building') {
-     echo 'build project'
-     sh 'mvn clean verify sonar:sonar -o'
-   }
 
     stage('package') {
         echo 'package with maven'

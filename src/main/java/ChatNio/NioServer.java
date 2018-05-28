@@ -19,9 +19,10 @@ public class NioServer {
   }
 
   public void startServer() {
+    ServerSocketChannel serverChannel = null;
     try {
       this.selector = Selector.open();
-      ServerSocketChannel serverChannel = ServerSocketChannel.open();
+      serverChannel = ServerSocketChannel.open();
       serverChannel.configureBlocking(false);
       serverChannel.socket().bind(address);
       serverChannel.register(selector, SelectionKey.OP_ACCEPT);
@@ -29,11 +30,19 @@ public class NioServer {
       SelectorHandle();
     } catch (IOException e) {
       e.printStackTrace();
+    } finally {
+      if (serverChannel != null) {
+        try {
+          serverChannel.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 
   private void SelectorHandle() throws IOException {
-    while (1 != 0) {
+    while (true) {
       //wait for events
       this.selector.select();
       //work on selector keys
@@ -58,7 +67,6 @@ public class NioServer {
           this.write(key);
         }
       }
-
     }
   }
 

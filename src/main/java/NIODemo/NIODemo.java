@@ -1,5 +1,6 @@
 package NIODemo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -7,8 +8,11 @@ import java.nio.channels.FileChannel;
 
 public class NIODemo {
 
-  public static void main(String args[]) throws IOException {
-    RandomAccessFile aFile = new RandomAccessFile("E:\\IDE\\IntelliJ IDEA\\IM\\Chat\\src\\main\\java\\NIODemo\\test.txt", "rw");
+  public static void main(String args[]) {
+    RandomAccessFile aFile = null;
+    try {
+      aFile = new RandomAccessFile("E:\\IDE\\IntelliJ IDEA\\IM\\Chat\\src\\main\\java\\NIODemo\\test.txt", "rw");
+
     FileChannel inChannel = aFile.getChannel();
 
     ByteBuffer buf = ByteBuffer.allocate(48);
@@ -26,7 +30,20 @@ public class NIODemo {
       buf.clear();
       bytesRead = inChannel.read(buf);
     }
-    aFile.close();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      if (aFile != null) {
+        try {
+          aFile.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+
+    }
   }
 
 }
