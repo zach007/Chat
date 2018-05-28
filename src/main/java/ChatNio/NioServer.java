@@ -77,7 +77,7 @@ public class NioServer {
     SocketChannel channel = (SocketChannel) key.channel();
     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
     int numRead = -1;
-    int read = channel.read(byteBuffer);
+    channel.read(byteBuffer);
 
     if (numRead == -1) {
       this.dataMapper.remove(channel);
