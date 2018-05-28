@@ -43,6 +43,7 @@ public class NioServer {
 
   private void SelectorHandle() throws IOException {
     while (true) {
+
       //wait for events
       this.selector.select();
       //work on selector keys
