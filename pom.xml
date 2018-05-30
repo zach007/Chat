@@ -66,11 +66,11 @@
             <name>snapshots</name>
             <url>http://192.168.0.103:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
-        <repository>
-            <id>releases</id>
-            <name>releases</name>
-            <url>http://192.168.0.103:8081/repository/maven-releases/</url>
-        </repository>
+        <!--        <repository>
+                    <id>releases</id>
+                    <name>releases</name>
+                    <url>http://192.168.0.103:8081/repository/maven-releases/</url>
+                </repository>-->
         <site>
             <id>nexus</id>
             <name>Nexus Sites</name>
