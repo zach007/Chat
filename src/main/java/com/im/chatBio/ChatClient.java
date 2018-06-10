@@ -1,3 +1,5 @@
+package com.im.chatBio;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -23,21 +25,30 @@ public class ChatClient implements Runnable {
   }
 
   public static void main(String[] args) {
-    //new ChatClient("localhost", 9001);
+    //new com.im.chatBio.ChatClient("localhost", 9001);
     if (args.length != 2) {
-      System.out.println("Usage: java ChatClient host port");
+      System.out.println("Usage: java com.im.chatBio.ChatClient host port");
     } else {
       new ChatClient(args[0], Integer.parseInt(args[1]));
     }
   }
 
-  private void start() throws IOException {
-    console = new DataInputStream(System.in);
-    streamOut = new DataOutputStream(socket.getOutputStream());
-    if (thread == null) {
-      client = new ChatClientThread(this, socket);
-      thread = new Thread(this);
-      thread.start();
+  public void run() {
+    while (thread != null) {
+      try {
+        if (console != null) {
+          InputStreamReader in = new InputStreamReader(console, "utf-8");
+          BufferedReader reader = new BufferedReader(in);
+          String str = reader.readLine();
+          if (str != null) {
+            streamOut.writeUTF(str);
+            streamOut.flush();
+          }
+        }
+      } catch (IOException ioe) {
+        System.out.println("Sending error: " + ioe.getMessage());
+        stop();
+      }
     }
   }
 
@@ -63,34 +74,25 @@ public class ChatClient implements Runnable {
     client.interrupt();
   }
 
-  public void run() {
-    while (thread != null) {
-      try {
-        if (console != null) {
-          InputStreamReader in = new InputStreamReader(console, "utf-8");
-          BufferedReader reader = new BufferedReader(in);
-          String str = reader.readLine();
-          if (str != null) {
-            streamOut.writeUTF(str);
-            streamOut.flush();
-          }
-        }
-      } catch (IOException ioe) {
-        System.out.println("Sending error: " + ioe.getMessage());
-        stop();
-      }
-    }
-  }
-
-  /**
-   * @param msg  jenkins + ngrok + github)))
-   */
   public void handle(String msg) {
     if (msg.equals(".bye")) {
       System.out.println("Good bye. Press RETURN to exit ...");
       stop();
     } else {
       System.out.println(msg);
+    }
+  }
+
+  /**
+   * @throws IOException
+   */
+  private void start() throws IOException {
+    console = new DataInputStream(System.in);
+    streamOut = new DataOutputStream(socket.getOutputStream());
+    if (thread == null) {
+      client = new ChatClientThread(this, socket);
+      thread = new Thread(this);
+      thread.start();
     }
   }
 }

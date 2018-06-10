@@ -1,3 +1,5 @@
+package com.im.chatBio;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,24 +28,11 @@ public class ChatServer implements Runnable {
   }
 
   public static void main(String[] args) {
-    //new ChatServer(9001);
+    //new com.im.chatBio.ChatServer(9001);
     if (args.length != 1) {
-      System.out.println("Usage: java ChatServer port");
+      System.out.println("Usage: java com.im.chatBio.ChatServer port");
     } else {
       new ChatServer(Integer.parseInt(args[0]));
-    }
-  }
-
-  public void run() {
-    while (thread != null) {
-      try {
-        System.out.println("Waiting for a client ...");
-        Socket socket = server.accept();
-        addConnection(socket);
-      } catch (IOException ie) {
-        System.out.println("Acceptance Error: " + ie);
-        stop();
-      }
     }
   }
 
@@ -92,10 +81,17 @@ public class ChatServer implements Runnable {
     }
   }
 
-  public void keepServerAlive() {
-    if (thread == null) {
-      thread = new Thread(this);
-      thread.start();
+  @Override
+  public void run() {
+    while (thread != null) {
+      try {
+        System.out.println("Waiting for a client ...");
+        Socket socket = server.accept();
+        addConnection(socket);
+      } catch (IOException ie) {
+        System.out.println("Acceptance Error: " + ie);
+        stop();
+      }
     }
   }
 
@@ -131,4 +127,13 @@ public class ChatServer implements Runnable {
     }
   }
 
+  /**
+   * make ChatServer run in Thread
+   */
+  public void keepServerAlive() {
+    if (thread == null) {
+      thread = new Thread(this);
+      thread.start();
+    }
+  }
 }

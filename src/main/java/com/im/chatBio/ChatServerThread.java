@@ -1,3 +1,7 @@
+package com.im.chatBio;
+
+import com.im.chatBio.ChatServer;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -15,6 +19,19 @@ public class ChatServerThread extends Thread {
     port = socket.getPort();
   }
 
+  public void run() {
+    System.out.println("Server Thread " + port + " running.");
+    while (true) {
+      try {
+        server.handle(port, streamIn.readUTF());
+      } catch (IOException ioe) {
+        System.out.println(port + " ERROR reading: " + ioe.getMessage());
+        server.remove(port);
+        interrupt();
+      }
+    }
+  }
+
   public int getPort() {
     return port;
   }
@@ -27,19 +44,6 @@ public class ChatServerThread extends Thread {
       System.out.println(port + " ERROR sending: " + ioe.getMessage());
       server.remove(port);
       interrupt();
-    }
-  }
-
-  public void run() {
-    System.out.println("Server Thread " + port + " running.");
-    while (true) {
-      try {
-        server.handle(port, streamIn.readUTF());
-      } catch (IOException ioe) {
-        System.out.println(port + " ERROR reading: " + ioe.getMessage());
-        server.remove(port);
-        interrupt();
-      }
     }
   }
 

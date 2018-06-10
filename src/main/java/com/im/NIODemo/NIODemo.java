@@ -1,4 +1,4 @@
-package NIODemo;
+package com.im.NIODemo;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,7 +11,7 @@ public class NIODemo {
   public static void main(String args[]) {
     RandomAccessFile aFile = null;
     try {
-      aFile = new RandomAccessFile("E:\\IDE\\IntelliJ IDEA\\IM\\Chat\\src\\main\\java\\NIODemo\\test.txt", "rw");
+      aFile = new RandomAccessFile("E:\\IDE\\IntelliJ IDEA\\IM\\Chat\\src\\main\\java\\com.im.NIODemo\\test.txt", "rw");
 
     FileChannel inChannel = aFile.getChannel();
 

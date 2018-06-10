@@ -1,3 +1,5 @@
+package com.im.chatBio;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -12,6 +14,17 @@ public class ChatClientThread extends Thread {
     socket = chatSocket;
     open();
     start();
+  }
+
+  public void run() {
+    while (true) {
+      try {
+        client.handle(streamIn.readUTF());
+      } catch (IOException ioe) {
+        System.out.println("Listening error: " + ioe.getMessage());
+        client.stop();
+      }
+    }
   }
 
   public void open() {
@@ -30,17 +43,6 @@ public class ChatClientThread extends Thread {
       }
     } catch (IOException ioe) {
       System.out.println("Error closing input stream: " + ioe);
-    }
-  }
-
-  public void run() {
-    while (true) {
-      try {
-        client.handle(streamIn.readUTF());
-      } catch (IOException ioe) {
-        System.out.println("Listening error: " + ioe.getMessage());
-        client.stop();
-      }
     }
   }
 }

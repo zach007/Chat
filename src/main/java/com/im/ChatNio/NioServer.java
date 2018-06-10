@@ -1,4 +1,4 @@
-package ChatNio;
+package com.im.ChatNio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -77,7 +77,6 @@ public class NioServer {
     SocketChannel channel = (SocketChannel) key.channel();
     ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
     int numRead = -1;
-    channel.read(byteBuffer);
 
     if (numRead == -1) {
       this.dataMapper.remove(channel);

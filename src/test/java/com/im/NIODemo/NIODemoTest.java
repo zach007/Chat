@@ -1,4 +1,4 @@
-package NIODemo;
+package com.im.NIODemo;
 
 import org.junit.Test;
 

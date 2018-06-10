@@ -1,4 +1,4 @@
-package ThreadPoolDemo;
+package com.im.ThreadPoolDemo;
 
 public class WorkThread implements Runnable {
   private String command;
