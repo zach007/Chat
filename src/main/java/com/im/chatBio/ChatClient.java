@@ -25,11 +25,12 @@ public class ChatClient implements Runnable {
   }
 
   public static void main(String[] args) {
-    //new com.im.chatBio.ChatClient("localhost", 9001);
     if (args.length != 2) {
       System.out.println("Usage: java com.im.chatBio.ChatClient host port");
     } else {
       new ChatClient(args[0], Integer.parseInt(args[1]));
+      for (int i = 0; i < 20; i++) {
+      }
     }
   }
 

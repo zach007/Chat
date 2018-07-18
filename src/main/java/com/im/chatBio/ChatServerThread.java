@@ -1,12 +1,10 @@
 package com.im.chatBio;
 
-import com.im.chatBio.ChatServer;
-
 import java.io.*;
 import java.net.Socket;
 
-public class ChatServerThread extends Thread {
-  private ChatServer server = null;
+public class ChatServerThread implements Runnable {
+  private ChatServer chatServer = null;
   private Socket socket = null;
   private int port = 0;
   private DataInputStream streamIn = null;
@@ -14,20 +12,26 @@ public class ChatServerThread extends Thread {
 
   public ChatServerThread(ChatServer chatServer, Socket currentSocket) {
     super();
-    this.server = chatServer;
+    this.chatServer = chatServer;
     this.socket = currentSocket;
     port = socket.getPort();
   }
 
+  @Override
   public void run() {
     System.out.println("Server Thread " + port + " running.");
+    try {
+      open();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     while (true) {
       try {
-        server.handle(port, streamIn.readUTF());
+        chatServer.handle(this, streamIn.readUTF());
       } catch (IOException ioe) {
         System.out.println(port + " ERROR reading: " + ioe.getMessage());
-        server.remove(port);
-        interrupt();
+        chatServer.remove(this);
+        //interrupt();
       }
     }
   }
@@ -42,8 +46,8 @@ public class ChatServerThread extends Thread {
       streamOut.flush();
     } catch (IOException ioe) {
       System.out.println(port + " ERROR sending: " + ioe.getMessage());
-      server.remove(port);
-      interrupt();
+      chatServer.remove(this);
+      //interrupt();
     }
   }
 

@@ -1,18 +1,24 @@
 package com.im.chatBio;
 
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
+import java.util.concurrent.*;
 
 public class ChatServer implements Runnable {
-
-  private ChatServerThread[] clients = new ChatServerThread[50];
+  private static final Logger logger = LogManager.getLogger(ChatServer.class);
+  private List<ChatServerThread> serverThreadList = Lists.newArrayList();
   private ServerSocket server = null;
-  private Thread thread = null;
-  private int clientCount = 0;
+  private ThreadPoolExecutor threadPoolExecutor;
 
   /**
-   * 监听客户端.
+   * 监听客户端
    *
    * @param port 端口
    */
@@ -21,14 +27,14 @@ public class ChatServer implements Runnable {
       System.out.println("Binding to port " + port + ", please wait  ...");
       server = new ServerSocket(port);
       System.out.println("Server started: " + server);
-      keepServerAlive();//保持server永驻
+      ExecutorService executorService = Executors.newSingleThreadExecutor();
+      executorService.execute(this);
     } catch (IOException ioe) {
       System.out.println(ioe);
     }
   }
 
   public static void main(String[] args) {
-    //new com.im.chatBio.ChatServer(9001);
     if (args.length != 1) {
       System.out.println("Usage: java com.im.chatBio.ChatServer port");
     } else {
@@ -40,57 +46,43 @@ public class ChatServer implements Runnable {
    * @param socket 每一个建立的socket连接都创建一个新线程，并且确保客户端最大连接数.
    */
   private void addConnection(Socket socket) {
-    if (clientCount < clients.length) {
-      System.out.println("Client accepted: " + socket);
-      clients[clientCount] = new ChatServerThread(this, socket);
-      try {
-        clients[clientCount].open();
-        clients[clientCount].start();
-        clientCount++;
-      } catch (IOException ioe) {
-        System.out.println("Error opening thread: " + ioe);
-      }
-    } else {
-      System.out.println("Client refused: maximum " + clients.length + " reached.");
-    }
-  }
-
-  private int findClient(int port) {
-    for (int i = 0; i < clientCount; i++) {
-      if (clients[i].getPort() == port) {
-        return i;
-      }
-    }
-    return -1;
+    ArrayBlockingQueue<Runnable> blockingQueue = new ArrayBlockingQueue<>(50);
+    RejectHandler rejectHandler = new RejectHandler();
+    ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true).setNameFormat("chat-%d").build();
+    threadPoolExecutor = new ThreadPoolExecutor(2, 5, 10, TimeUnit.MINUTES, blockingQueue, threadFactory, rejectHandler);
+    System.out.println("Client accepted: " + socket);
+    ChatServerThread chatServerThread = new ChatServerThread(this, socket);
+    serverThreadList.add(chatServerThread);
+    threadPoolExecutor.execute(chatServerThread);
   }
 
   /**
    * 将获取当前线程id,并且将线程所输入的信息，发送给其他线程.
    *
-   * @param port    线程id
+   * @param chatServerThread 当前线程
    * @param input 线程输入信息
    */
-  public synchronized void handle(int port, String input) {
+  public synchronized void handle(ChatServerThread chatServerThread, String input) {
+    int port = chatServerThread.getPort();
     if (input.equals(".bye")) {
-      clients[findClient(port)].send(".bye");
-      remove(port);
+      chatServerThread.send(".bye");
+      remove(chatServerThread);
     } else {
-      for (int i = 0; i < clientCount; i++) {
-        clients[i].send(port + ": " + input);
+      for (ChatServerThread serverThread : serverThreadList) {
+        serverThread.send(port + ":" + input);
       }
     }
   }
 
   @Override
   public void run() {
-    while (thread != null) {
+    while (true) {
       try {
         System.out.println("Waiting for a client ...");
         Socket socket = server.accept();
         addConnection(socket);
       } catch (IOException ie) {
         System.out.println("Acceptance Error: " + ie);
-        stop();
       }
     }
   }
@@ -98,10 +90,18 @@ public class ChatServer implements Runnable {
   /**
    * 找到当前线程数组所在位置，删除线程.
    *
-   * @param port 当前线程id
+   * @param chatServerThread 当前线程
    */
-  public synchronized void remove(int port) {
-    int pos = findClient(port);
+  public synchronized void remove(ChatServerThread chatServerThread) {
+    serverThreadList.remove(chatServerThread);
+    int port = chatServerThread.getPort();
+    try {
+      chatServerThread.close();
+    } catch (IOException e) {
+      System.out.println("Error closing thread :" + e);
+    }
+    System.out.println("Removing client thread " + port);
+    /*int pos = findClient(port);
     if (pos >= 0) {
       ChatServerThread toTerminate = clients[pos];
       System.out.println("Removing client thread " + port + " at " + pos);
@@ -116,24 +116,6 @@ public class ChatServer implements Runnable {
       } catch (IOException ioe) {
         System.out.println("Error closing thread: " + ioe);
       }
-      toTerminate.interrupt();
-    }
-  }
-
-  public void stop() {
-    if (thread != null) {
-      thread.interrupt();
-      thread = null;
-    }
-  }
-
-  /**
-   * make ChatServer run in Thread
-   */
-  public void keepServerAlive() {
-    if (thread == null) {
-      thread = new Thread(this);
-      thread.start();
-    }
+     */ //toTerminate.interrupt();
   }
 }
