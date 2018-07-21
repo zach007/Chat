@@ -3,12 +3,13 @@ package com.im.chatBio;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ChatClient implements Runnable {
   private Socket socket = null;
   private DataInputStream console = null;
   private DataOutputStream streamOut = null;
-  private Thread thread = null;
   private ChatClientThread client = null;
 
   public ChatClient(String serverName, int serverPort) {
@@ -29,13 +30,11 @@ public class ChatClient implements Runnable {
       System.out.println("Usage: java com.im.chatBio.ChatClient host port");
     } else {
       new ChatClient(args[0], Integer.parseInt(args[1]));
-      for (int i = 0; i < 20; i++) {
-      }
     }
   }
 
   public void run() {
-    while (thread != null) {
+    while (true) {
       try {
         if (console != null) {
           InputStreamReader in = new InputStreamReader(console, "utf-8");
@@ -54,10 +53,6 @@ public class ChatClient implements Runnable {
   }
 
   public void stop() {
-    if (thread != null) {
-      thread.interrupt();
-      thread = null;
-    }
     try {
       if (console != null) {
         console.close();
@@ -72,7 +67,6 @@ public class ChatClient implements Runnable {
       System.out.println("Error closing ...");
     }
     client.close();
-    client.interrupt();
   }
 
   public void handle(String msg) {
@@ -90,10 +84,8 @@ public class ChatClient implements Runnable {
   private void start() throws IOException {
     console = new DataInputStream(System.in);
     streamOut = new DataOutputStream(socket.getOutputStream());
-    if (thread == null) {
-      client = new ChatClientThread(this, socket);
-      thread = new Thread(this);
-      thread.start();
-    }
+    ExecutorService executorService = Executors.newFixedThreadPool(2);
+    executorService.execute(new ChatClientThread(this, socket));
+    executorService.execute(this);
   }
 }

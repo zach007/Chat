@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class ChatClientThread extends Thread {
+public class ChatClientThread implements Runnable {
   private Socket socket = null;
   private ChatClient client = null;
   private DataInputStream streamIn = null;
@@ -13,7 +13,6 @@ public class ChatClientThread extends Thread {
     client = chatClient;
     socket = chatSocket;
     open();
-    start();
   }
 
   public void run() {
